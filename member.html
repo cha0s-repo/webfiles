@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="/static/css/member/main.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/static/css/member/dialog.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/static/css/member/font-awesome.css" media="all" />
+<script type="text/javascript" src="/static/js/lib/jquery_min.js"></script>
+<script type="text/javascript" src="/static/js/main.js"></script>
+<script type="text/javascript" src="/static/js/lib/dialog_min.js"></script>
+<title>会员卡</title>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+	<meta name="Keywords" content="" />
+	<meta name="Description" content="" />
+	<!-- Mobile Devices Support @begin -->
+		<meta content="application/xhtml+xml;charset=UTF-8" http-equiv="Content-Type">
+		<meta content="telephone=no, address=no" name="format-detection">
+		<meta name="apple-mobile-web-app-capable" content="yes" /> <!-- apple devices fullscreen -->
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<!-- Mobile Devices Support @end -->
+	<link rel="shortcut icon" href="/static/img/favicon.ico" />
+</head>
+<body onselectstart="return true;" ondragstart="return false;">
+	<script>
+	// 	$().ready(function(){
+	//
+	// });
+
+	function charge(){
+		var d = new iDialog();
+        var payment = '';
+        		d.open({
+			classList: "valid_phone charge",
+			title:"",
+			close:"",
+			content:'<ul class="list_ul_card">'+
+					'<form id="form1" action="javascript:;" method="post">'+
+						'<li data-card>'+
+							'<table>'+
+								'<tr class="input wrapInput">'+
+									'<td><label class="pre" style="color:#333333;">充值金额：</label></td>'+
+									'<td style="width:100%;"><input type="number" name="money" placeholder="请输入充值金额" maxlength="15" class="input" /></td>'+
+								'</tr><tr><td colspan="2" style="height:15px;"></td></tr>'+
+								'<tr class="input wrapInput">'+
+									'<td><label class="pre pl_10" style="color:#333333;">充值方式:</label></td>'+
+									'<td style="width:100%;" colspan="2">'+
+										'<select name="paytype" class="select">'+
+                                            payment+
+										'</select>'+
+									'</td>'+
+								'</tr>'+
+							'</table>'+
+						'</li>'+
+					'</form>'+
+				'</ul>',
+			btns:[
+				{id:"", name:"确定", onclick:"fn.call();", fn: function(self){
+					var form1 = document.getElementById("form1");
+					var obj = {
+						money: form1.money.value,
+						paytype: form1.paytype.value
+					}
+					if(parseFloat(obj.money) <=0 ){
+						alert("请输入正确的充值金额", 1500);
+						return false;
+					}
+					loading(true);
+					$.ajax({
+						url: "/Webnewmemberscore/Recharge/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k",
+						type:"post",
+						data:obj,
+                        dataType:'json',
+						success: function(data){
+                            if (data.errno == 0) {
+                                setTimeout("location.href='"+data.pay_url+"'",1500);
+                            } else {
+                                alert(data.error, 1500);
+                                loading(false);
+                            }
+
+						}
+					});
+				}},
+				{id:"", name:"取消", onclick:"fn.call();", fn: function(self){
+					self.die();
+				}}
+			]
+		});
+	}
+	function pay(){
+		var d = new iDialog();
+        var payment = '';
+        		d.open({
+			classList: "valid_phone pay",
+			title:"",
+			close:"",
+			content:'<ul class="list_ul_card">'+
+					'<form id="form2" action="javascript:;" method="post">'+
+						'<li data-card>'+
+							'<table>'+
+								'<tr class="input wrapInput">'+
+									'<td></td>'+
+									'<td style="width:100%;" colspan="2">'+
+										'<select name="store" class="select">'+
+											'<option value="0" selected="selected">总部</option>'+
+																															'<option value="35975">天玓店</option>'+
+																					'<option value="35974">海岸城店</option>'+
+																														'</select>'+
+									'</td>'+
+								'</tr>'+
+								'<tr class="input wrapInput">'+
+									'<td></td>'+
+									'<td style="width:100%;" colspan="2">'+
+										'<select name="discount" class="select">'+
+											'<option value="0">请选择所需优惠：</option>'+
+																					'</select>'+
+									'</td>'+
+								'</tr>'+
+								'<tr class="input wrapInput">'+
+									'<td></td>'+
+									'<td style="width:100%;" colspan="2">'+
+										'<select name="paytype"  id="paytype" class="select" onChange="SelectCode(this);">'+
+											payment+
+											'<option value="2">余额支付 </option>'+
+											'<option value="1">现金付款 </option>'+
+										'</select>'+
+									'</td>'+
+								'</tr>'+
+								'<tr class="input wrapInput">'+
+									'<td>'+
+										'<label class="pre ml_5" style="color:#333333;"> 消费金额：</label> '+
+									'</td>'+
+									'<td style="width:100%;">'+
+										'<input name="money" type="number" placeholder="请输入实际消费金额" maxlength="15" class="input" />'+
+									'</td>'+
+								'</tr>'+
+								'<tr class="input wrapInput" id="vcode">'+
+				'<td style="width:100%;"><input type="password" placeholder="会员卡密码：暂未设置，无需填写" maxlength="30" class="input" name="pay_pass"></td>'+
+				'<td>&nbsp;</td>'+
+								'</tr>'+
+								'<tr class="input wrapInput" id="password" style="display:none">'+
+									'<td style="width:70%;"><input type="password" placeholder="商家确认密码：" maxlength="30" class="input" name="password"></td>'+
+									'<td>&nbsp;</td>'+
+								'</tr>'+
+
+							'</table>'+
+						'</li>'+
+					'</form>'+
+				'</ul>',
+			btns:[
+				{id:"", name:"确定", onclick:"fn.call();", fn: function(self){
+					var form2 = document.getElementById("form2");
+					var obj = {
+                        store: form2.store.value,
+                        discount: form2.discount.value,
+						paytype: form2.paytype.value,
+						money: form2.money.value,
+                        //validCode: form2.vcode.value,
+						password: form2.password.value,
+						pay_pass: form2.pay_pass.value
+					}
+                    var code = $("input[name='paytype'] :selected").attr("code");
+                    if(obj.paytype == 0){
+                        alert("请选择支付方式", 1500);
+                        return false;
+                    }else if(obj.paytype == 1){
+						if(obj.password == ''){
+							alert("商家确认密码不能为空", 1500);
+							return false;
+						}
+					}
+                    if(parseFloat(obj.money) <= 0){
+                        alert("请输入正确的消费金额",1500);
+                        return false;
+                    }
+
+					loading(true);
+					$.ajax({
+						url: "/Webnewmemberscore/Pay/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k",
+						type:"post",
+						data:obj,
+                        dataType:'json',
+						success: function(data){
+							loading(false);
+                            if(data.errno == 0) {
+                                if (data.pay_url == undefined) {
+                                    alert(data.error, 1500);
+                                    //专挑到支付成功页面
+                                    setTimeout("location.href='"+data.pay_result_url+"'",1500);
+                                } else {
+                                    //alert(data.pay_url);
+                                    setTimeout("location.href='"+data.pay_url+"'",1500);
+                                }
+
+                            }else{
+                                alert(data.error, 1500);
+                                return false;
+                            }
+
+						}
+					});
+				}},
+				{id:"", name:"取消", onclick:"fn.call();", fn: function(selfs){
+                    selfs.die();
+				}}
+			]
+		});
+
+        $("#paytype option:first").prop("selected", 'selected');
+        SelectCode($("#paytype"));
+	}
+
+    function OrderWeipay(urls){
+        var url = '/payment/weixinpay/start/350705/default.aspx?showwxpaytitle=1';
+        $.ajax({
+            url:url,
+            cache:false,
+            dataType:'html',
+            data:{urls:urls},
+            type:"POST",
+            success:function(msgObj){
+                $('#orderpay').html(msgObj);
+                return false;
+            }
+        });
+
+    }
+
+    $(document).ready(function(){
+        $("#codeing").on(function(){
+            alert("请输入正确的充值金额",1500);
+
+
+        });
+
+
+    });
+</script>
+<div class="container card">
+	<header>
+		<div class="header card">
+			<div id="card" data-role="card" onclick="this.classList.toggle('on');" >
+				<div class="front" style="background-image:url(/static/img/card_bg08.png);">
+										<span class="name" style="color:#000000">公司信息</span>
+					<span class="no" style="color:#000000;">1000002</span>
+				</div>
+				<div class="back" style="background-image:url(/static/img/card_bg08.png);">
+							<span style="color:#000000;">
+								<h3>使用说明：</h3>
+								<pre style="white-space:pre-line;height: 84px;overflow:hidden;">
+									*使用此卡，可享受优惠服务！								</pre>
+							</span>
+				</div>
+			</div>
+		</div>
+		<div>
+			<ul class="box group_btn">
+							<li><a href="javascript:charge();" >充值</a></li>
+												<li><a href="javascript:pay();" >付款</a></li>
+							</ul>
+		</div>
+	</header>
+	<div class="body">
+		<ul class="list_ul">
+			<div>
+								<li class="li_b">
+					<a href="/Webnewmemberscore/ListCoupon/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k"><label class="label"><i>&nbsp;</i>会员优惠<span>&nbsp;</span></label></a>
+				</li>
+				<li class="li_c">
+					<a href="/Webnewmemintegral/exchangelist/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k"><label class="label"><i>&nbsp;</i>积分兑换<span>&nbsp;</span></label></a>
+				</li>
+				<li class="li_d">
+					<a href="/Webnewmemberscore/editMemberInfo/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k"><label class="label"><i>&nbsp;</i>完善会员卡资料 <span>&nbsp;</span></label></a>
+				</li>
+							</div>
+			<div>
+																						<li class="li_g">
+								<a href="http://350705.m.yourdomain.com/weisite/home?pid=350705&bid=609031&wechatid=ogP1as8QIXNIxpac55LkRtu17U2k&from=1&wxref=mp.weixin.qq.com"><label class="label"><i class="icon-bullhorn">&nbsp;</i>官网<span>&nbsp;</span></label></a>
+							</li>
+						
+																		<li class="li_g">
+								<a href="http://350705.m.yourdomain.com/activity/ScratchCard?id=53521&bid=609031&wechatid=ogP1as8QIXNIxpac55LkRtu17U2k&v=9ef8fe746828962e4081c7c53bba47db&pid=350705"><label class="label"><i class="icon-bullhorn">&nbsp;</i>上线<span>&nbsp;</span></label></a>
+							</li>
+						
+												</div>
+			<div>
+				<li class="li_i">
+					<a class="label" href="tel:88888888 "><i>&nbsp;</i>88888888 <span>&nbsp;</span></a>
+				</li>
+				<li class="li_j">
+										<a href="http://j.map.baidu.com/T5XNz">
+					<label class="label"><i>&nbsp;</i><p class="mutipleLine">公司地址</p><span>&nbsp;</span></label>
+					</a>
+				</li>
+				<!-- 门店-->
+								<li class="li_k">
+					<a href="/Webnewmemberscore/store/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k"><label class="label"><i>&nbsp;</i>适用门店<span>&nbsp;</span></label></a>
+				</li>
+							</div>
+		</ul>
+	</div>
+    <div style="display: none;" id="orderpay">
+
+    </div>
+    <footer>
+	<nav class="nav">
+		<ul class="box">
+			<li>
+				<a href="/Webnewmemberscore/index/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k" class="on">
+					<p class="card"></p>
+					<span>会员卡</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Webnewmemannounce/systemnotice?pid=350705&wechatid=ogP1as8QIXNIxpac55LkRtu17U2k" >
+					<p id="Js-msg-num" class="msg" data-count="1" ></p>
+					<span>消息</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Webnewmemintegral/signin/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k" >
+					<p class="sign"></p>
+					<span>签到</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Webnewmemberscore/share/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k" >
+					<p class="share"></p>
+					<span>分享</span>
+				</a>
+			</li>
+			<li>
+				<a href="/Webnewmemberscore/my/pid/350705/wechatid/ogP1as8QIXNIxpac55LkRtu17U2k" class="my " >
+					<p class="my"  ></p>
+					<span>我的</span>
+				</a>
+			</li>
+		</ul>
+	</nav>
+</footer>
+<script type="text/javascript">
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	WeixinJSBridge.call('hideToolbar');
+});
+
+
+</script>
+</div>
+<img style="display:none;" src="/static/img/card_bg08.png" class="shareImgUrl" />
+<script type="text/javascript">
+    function SelectCode(obj){
+        var val = $(obj).val();
+        if(val != 2){
+            $("#vcode").hide();
+        }else{
+            $("#vcode").show();
+        }
+
+		if(val == 1){
+			$("#vcode").hide();
+			$("#password").show();
+		}else{
+			$("#password").hide();
+		}
+    }
+
+
+</script>
+</body>
+<script type="text/javascript">
+(function() {
+	var wtj = document.createElement('script'); wtj.type = 'text/javascript'; wtj.async = true;
+	wtj.src = 'http://tj.yourdomain.com/wtj.js?url=' + encodeURIComponent(location.href);
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(wtj, s);
+})();
+function yourdomainAfterShare(shareFromWechatId,sendFriendLink,shareToPlatform){
+	var wmShare = document.createElement('script'); wmShare.type = 'text/javascript'; wmShare.async = true;
+    wmShare.src = 'http://tj.yourdomain.com/api-share.js?fromWechatId=' + shareFromWechatId + '&shareToPlatform=';
+	wmShare.src += shareToPlatform + '&pid=350705&sendFriendLink=' + encodeURIComponent(sendFriendLink);
+    var stj = document.getElementsByTagName('script')[0]; stj.parentNode.insertBefore(wmShare, stj);
+}
+
+/**
+ * 默认分享出去的数据
+ *
+ */
+function getShareImageUrl(){
+
+	var share_imgurl = "/static/img/web_bb/card/cardbg/card_bg08.png";
+	if("" == share_imgurl){
+		var shareImgObj = document.getElementsByClassName("shareImgUrl")[0];
+		if('undefined' != typeof(shareImgObj)){
+			share_imgurl = shareImgObj.src;
+		}
+	}
+	return share_imgurl;
+}
+
+window.shareData = window.shareData || {
+		"timeLineLink": "http://350705.m.yourdomain.com/Webnewmemberscore/index?pid=350705&wechatid=fromUsername",
+	"sendFriendLink": "http://350705.m.yourdomain.com/Webnewmemberscore/index?pid=350705&wechatid=fromUsername",
+	"weiboLink": "http://350705.m.yourdomain.com/Webnewmemberscore/index?pid=350705&wechatid=fromUsername",
+	"tTitle": '会员中心',
+	"tContent": '微信会员卡，方便携带，永不挂失！',
+	"fTitle": '会员中心',
+	"fContent": '微信会员卡，方便携带，永不挂失！',
+	"wContent": '微信会员卡，方便携带，永不挂失！'}
+
+
+
+document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
+	// 发送给好友
+	WeixinJSBridge.on('menu:share:appmessage', function (argv) {
+		WeixinJSBridge.invoke('sendAppMessage', { 
+			"img_url": getShareImageUrl(),
+			"img_width": "640",
+			"img_height": "640",
+			"link": window.shareData.sendFriendLink,
+			"desc": window.shareData.fContent,
+			"title": window.shareData.fTitle
+		}, function (res) {
+			if('send_app_msg:cancel' != res.err_msg){
+				yourdomainAfterShare("ogP1as8QIXNIxpac55LkRtu17U2k",window.shareData.sendFriendLink,'appmessage');
+			}
+			//_report('send_msg', res.err_msg);
+		})
+	});
+
+	// 分享到朋友圈
+	WeixinJSBridge.on('menu:share:timeline', function (argv) {
+		WeixinJSBridge.invoke('shareTimeline', {
+			"img_url": getShareImageUrl(),
+			"img_width": "640",
+			"img_height": "640",
+			"link": window.shareData.timeLineLink,
+			"desc": window.shareData.tContent,
+			"title": window.shareData.tTitle
+		}, function (res) {
+			if('share_timeline:cancel' != res.err_msg){
+				//如果用户没有取消
+				yourdomainAfterShare("ogP1as8QIXNIxpac55LkRtu17U2k",window.shareData.timeLineLink,'timeline');
+			}
+			//_report('timeline', res.err_msg);
+		});
+	});
+
+	// 分享到微博
+	WeixinJSBridge.on('menu:share:weibo', function (argv) {
+		WeixinJSBridge.invoke('shareWeibo', {
+			"content": window.shareData.wContent,
+			"url": window.shareData.weiboLink
+		}, function (res) {
+			if('share_weibo:cancel' != res.err_msg){
+				yourdomainAfterShare("ogP1as8QIXNIxpac55LkRtu17U2k",window.shareData.weiboLink,'weibo');
+			}
+			//_report('weibo', res.err_msg);
+		});
+	});
+}, false);
+</script>
+<script type="text/javascript" src="http://kf.yourdomain.com/js/ChatFloat.js"></script>
+<script type="text/javascript">
+new ChatFloat({
+        AId: '350705',
+        openid: "ogP1as8QIXNIxpac55LkRtu17U2k",
+		top:150,
+		right:0,
+		IsTest:false
+});
+</script>
+
+
+<script type="text/javascript" src="/static/src/st/share_channel.js?v=10101010"></script>
+<script type="text/javascript" src="/static/src/st/base64.js?v=10101011"></script>
+<script type="text/javascript" src="/static/src/st/st.js?v=10101011"></script>
+<script type="text/javascript">
+
+st.push("_triggerEvent",{
+		"is_statistic_on":"on", //开关
+		"statisticServerPath": "http://statistic.yourdomain.com/wm.js", //统计地址
+		"memcServerPath": "http://statistic.yourdomain.com/memc?cmd=get", //缓存地址
+		"stat_action":"loadPage",  //统计动作类型
+		"stat_optValue":""    //参数值
+});
+</script></html>
